@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import android.os.Environment;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -20,6 +23,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @TeleOp
 public class LimelightCSVTest extends LinearOpMode {
@@ -27,6 +31,7 @@ public class LimelightCSVTest extends LinearOpMode {
     private static final Logger log = LoggerFactory.getLogger(LimelightCSVTest.class);
     private Limelight3A limelight;
     private ElapsedTime loopTimer;
+    private static IMU imu;
     //Objects
     private File file;
     private FileWriter fileWriter;
@@ -43,6 +48,8 @@ public class LimelightCSVTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        imu = hardwareMap.get(IMU.class, "imu");
+        initializeIMU();
 
         limelight.setPollRateHz(100); // 100 updates/sec
         limelight.start();
@@ -63,7 +70,7 @@ public class LimelightCSVTest extends LinearOpMode {
         }
         csvWriter = new CSVWriter(fileWriter);
 
-        dataArray.add(new String[]{"X(meters)", "Y(meters)"});
+        dataArray.add(new String[]{"X(meters)", "Y(meters)", "Yaw Offset(Degrees)", "Pitch Offset(Degrees)"});
 
         waitForStart();
 
@@ -75,9 +82,10 @@ public class LimelightCSVTest extends LinearOpMode {
           //  updateTelemetry(status, result);
 
             telemetry.addData("Loop Time (ms)", loopTimer.milliseconds());
-            telemetry.update();
 
 
+            double robotYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            limelight.updateRobotOrientation(robotYaw);
             dataCollection(result);
             telemetry.addData("-", i);
             log();
@@ -93,18 +101,41 @@ public class LimelightCSVTest extends LinearOpMode {
         if (result != null && result.isValid()) {
             Pose3D mt1 = getMegaTag1Pose(result);
             if (mt1 != null) {
-                telemetry.addData("MT1 XY Distance", getXYDistanceToGoal(mt1));
-                double m1X = getXCoordinate(mt1);
-                telemetry.addData("MTI x", m1X);
-                double m1Y = getYCoordinate(mt1);
-                telemetry.addData("MTI y", m1Y);
+                telemetry.addData("Mt1 XY Distance", getXYDistanceToGoal(mt1));
+                double mt1X = getXCoordinate(mt1);
+                telemetry.addData("Mt1 X",mt1X );
+                double mt1Y = getYCoordinate(mt1);
+                telemetry.addData("Mt1 y", mt1Y);
 
-                String x = m1X + "";
-                String y = m1Y + "";
-
-                if (addData)
-                    dataArray.add(new String[]{x, y});
             }
+            Pose3D mt2 = getMegaTag2Pose(result);
+            if (mt2 != null) {
+                telemetry.addData("Mt2 XY Distance", getXYDistanceToGoal(mt2));
+                double mt2X = getXCoordinate(mt2);
+                telemetry.addData("Mt2 X",mt2X );
+                double mt2Y = getYCoordinate(mt2);
+                telemetry.addData("Mt2 y", mt2Y);
+
+            }
+
+
+            telemetry.addData("Fiducial XY Distance", getDistanceToFiducial(result,24));
+            double fidicualsX = getRobotXFromFiducial(result,24);
+            telemetry.addData("Fiducial X",fidicualsX );
+            double fidicualsY = getRobotYFromFiducial(result,24);
+            telemetry.addData("Fiducial y", fidicualsY);
+            double fiducialsYaw = getFiducialXAngle(result, 24);
+            telemetry.addData("yaw from fiducial", fiducialsYaw);
+            double fiducialsPitch = getFiducialYAngle(result, 24);
+            telemetry.addData("Pitch from fiducial", fiducialsPitch);
+
+            String x = fidicualsX + "";
+            String y = fidicualsY + "";
+            String yaw = fiducialsYaw + "";
+            String pitch = fiducialsPitch + "";
+
+            if (addData)
+                dataArray.add(new String[]{x, y, yaw,pitch});
         }
         else {
             telemetry.addData("No targets","");
@@ -169,8 +200,8 @@ public class LimelightCSVTest extends LinearOpMode {
             double robotY = pose.getPosition().y;
 
             // Goal's position (Red Goal center)
-            double goalX = 0; // TODO: Change
-            double goalY = 0;
+            double goalX = -1.482; // TODO: Change
+            double goalY = 1.413;
 
             double distanceX = goalX - robotX;
             double distanceY = goalY - robotY;
@@ -205,9 +236,9 @@ public class LimelightCSVTest extends LinearOpMode {
 
     /* --------------------  Own Algorithim -------------------- */
 
-    private static final double CAMERA_HEIGHT_M = 0.2794;  // 11 in
-    private static final double TARGET_HEIGHT_M = 0; // TODO: Change
-    private static final double CAMERA_PITCH_DEG = 24.0; // may not be best data
+    private static final double CAMERA_HEIGHT_M = 0.365;  // 11 in
+    private static final double TARGET_HEIGHT_M = 0.749; // TODO: Change
+    private static final double CAMERA_PITCH_DEG = 0; // may not be best data
 
     public double getXDistance_ty(LLResult result) {
         if (result != null && result.isValid()) {
@@ -252,8 +283,10 @@ public class LimelightCSVTest extends LinearOpMode {
                 telemetry.addData("Yaw", ypr[0]);
                 telemetry.addData("Pitch", ypr[1]);
                 telemetry.addData("Roll", ypr[2]);
-         */
+
            // telemetry.addData("Distance (ty)", getXYDistance_ty(result));
+
+          */
 
         }
 
@@ -264,6 +297,83 @@ public class LimelightCSVTest extends LinearOpMode {
             telemetry.addData("Limelight", "No Targets");
         }
     }
+
+    // Get robot X coordinate (field space) relative to a fiducial
+    public double getRobotXFromFiducial(LLResult result, int targetId) {
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+            for (LLResultTypes.FiducialResult fiducial : fiducials) {
+                if (fiducial.getFiducialId() == targetId) {
+                    return fiducial.getRobotPoseFieldSpace().getPosition().x;
+                }
+            }
+        }
+        return 0;
+    }
+
+    // Get robot Y coordinate (field space) relative to a fiducial
+    public double getRobotYFromFiducial(LLResult result, int targetId) {
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+            for (LLResultTypes.FiducialResult fiducial : fiducials) {
+                if (fiducial.getFiducialId() == targetId) {
+                    return fiducial.getRobotPoseFieldSpace().getPosition().y;
+                }
+            }
+        }
+        return 0;
+    }
+
+    // Get distance from robot → fiducial (field space)
+    public double getDistanceToFiducial(LLResult result, int targetId) {
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+            for (LLResultTypes.FiducialResult fiducial : fiducials) {
+                if (fiducial.getFiducialId() == targetId) {
+                    double x = fiducial.getCameraPoseTargetSpace().getPosition().x;
+                    double y = fiducial.getCameraPoseTargetSpace().getPosition().y;
+                    return Math.sqrt(x * x + y * y); // Pythagoras
+                }
+            }
+        }
+        return 0;
+    }
+
+    public double getFiducialXAngle(LLResult result, int targetId) {
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+            for (LLResultTypes.FiducialResult fiducial : fiducials) {
+                if (fiducial.getFiducialId() == targetId) {
+                    return fiducial.getTargetXDegrees();
+                }
+            }
+        }
+        return 0;
+    }
+    public double getFiducialYAngle(LLResult result, int targetId) {
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+            for (LLResultTypes.FiducialResult fiducial : fiducials) {
+                if (fiducial.getFiducialId() == targetId) {
+                    return fiducial.getTargetYDegrees();
+                }
+            }
+        }
+        return 0;
+    }
+
+
+    public static void initializeIMU() {
+        RevHubOrientationOnRobot revHubOrientation = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD);
+        IMU.Parameters revParameters = new IMU.Parameters(revHubOrientation);
+        imu.initialize(revParameters);
+        imu.resetYaw();
+    }
+
+
+
+
+
 
 }
 
