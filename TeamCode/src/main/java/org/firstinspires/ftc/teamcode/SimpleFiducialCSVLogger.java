@@ -51,7 +51,7 @@ public class SimpleFiducialCSVLogger extends LinearOpMode {
         for (int i = 0; i < 5000; i++) {
             LLResult result = limelight.getLatestResult();
             if (result != null && result.isValid()) {
-                // Get position data from first detected fiducial
+
                 List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
                 if (fiducials != null && !fiducials.isEmpty()) {
 
@@ -88,7 +88,7 @@ public class SimpleFiducialCSVLogger extends LinearOpMode {
                 telemetry.addData("Limelight", "No valid result");
             }
             telemetry.update();
-            sleep(10);
+           // sleep(10);
         }
 
         exportData();
