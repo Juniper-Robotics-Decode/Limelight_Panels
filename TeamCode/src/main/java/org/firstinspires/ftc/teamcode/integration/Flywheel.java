@@ -1,35 +1,40 @@
 package org.firstinspires.ftc.teamcode.integration;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeDegrees;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.util.InterpLUT;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-
+@Config
 public class Flywheel{
-    DcMotorEx motor;
+    Motor motor;
     public static double vP=0.001, vI=0, vD=0, vF=0;
 
     public static double defaultVelocity = 0;  // RPM
 
-    public static double targetVelocity = convertRPMToRadiansPerSecond(defaultVelocity); // convert to rpm
+    public static double targetVelocity = defaultVelocity; // convert to rpm
 
     private PIDFController pidfController;
 
-    public static double measuredVelocity;
+    public static double measuredVelocityTicks;
+
+    public static double measuredVelocityRPM;
 
     InterpLUT velocityMap;
 
     Telemetry telemetry;
-    double RPMTargetToPrint = 0;
+
+    double power;
 
 
-    public Flywheel (DcMotorEx flywheel, Telemetry telemetry) {
+    public Flywheel (Motor flywheel, Telemetry telemetry) {
         motor = flywheel;
      //   motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         //motor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -46,22 +51,23 @@ public class Flywheel{
             targetVelocity = defaultVelocity;
         }
         else {
-            RPMTargetToPrint = setVelocityByDistance(distance_m); // set target velocity in RPM
+             setVelocityByDistance(distance_m); // set target velocity in RPM
         }
 
-
-        telemetry.addData("target Velocity RPM", RPMTargetToPrint);
-        targetVelocity = convertRPMToRadiansPerSecond(targetVelocity); // target velocity now in Radians/sec
+       // targetVelocity = convertRPMToRadiansPerSecond(targetVelocity); // target velocity now in Radians/sec
 
         pidfController.setPIDF(vP,vI,vD,vF);
-        measuredVelocity = motor.getVelocity(RADIANS);
+        measuredVelocityTicks = motor.getCorrectedVelocity();
+        measuredVelocityRPM = convertTicksToRPM(measuredVelocityTicks);
 
         // The error - sign (which finds velocity)
-        double error = targetVelocity - measuredVelocity;
+        double error = targetVelocity - measuredVelocityRPM;
 
         // We use zero because we already calculate for error
-        double power = pidfController.calculate(error, 0);
-        motor.setPower(power);
+        double additionalPower = pidfController.calculate(measuredVelocityTicks, 500);
+        power = power + additionalPower;
+        telemetry.addData("Power", power);
+        motor.set(power);
         //motor.setVelocity(targetVelocity,RADIANS);
     }
 
@@ -89,12 +95,12 @@ public class Flywheel{
         return targetVelocity;
     }
 
-    public double getMeasuredVelocity () {
-        return measuredVelocity;
+    public double getMeasuredVelocityRPM () {
+        return measuredVelocityRPM;
     }
 
-    private static double convertRPMToRadiansPerSecond(double RPMVelocity) {
-        return Math.abs(RPMVelocity/ 60 * 2 * Math.PI);
+    private static double convertTicksToRPM(double ticksVelocity) {
+        return (ticksVelocity*60)/28;
     }
 
 
