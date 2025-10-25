@@ -1,74 +1,65 @@
 package org.firstinspires.ftc.teamcode.integration;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeDegrees;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.util.InterpLUT;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.lang.annotation.Target;
+
 @Config
 public class Flywheel{
-    Motor motor;
-    public static double vP=0.001, vI=0, vD=0, vF=0;
+    MotorEx motor;
+    public static double vP=0.005, vI=0, vD=0, vF = 0;
+
+    public static double ks=0, kv=1.2235, ka=0;
 
     public static double defaultVelocity = 0;  // RPM
 
-    public static double targetVelocity = defaultVelocity; // convert to rpm
+    public static double targetVelocityRPM = defaultVelocity;
 
-    private PIDFController pidfController;
-
-    public static double measuredVelocityTicks;
-
-    public static double measuredVelocityRPM;
+    public static double targetVelocityTicks;
 
     InterpLUT velocityMap;
 
     Telemetry telemetry;
 
-    double power;
 
 
-    public Flywheel (Motor flywheel, Telemetry telemetry) {
+    public Flywheel (MotorEx flywheel, Telemetry telemetry) {
         motor = flywheel;
-     //   motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        motor.setRunMode(Motor.RunMode.VelocityControl);
         //motor.setDirection(DcMotorSimple.Direction.REVERSE);
-        pidfController = new PIDFController(vP,vI,vD,vF);
         createVelocityMap();
         this.telemetry = telemetry;
-
     }
 
     public void updatePID(double distance_m) { // This method is used to update position every loop.
 
-
         if(distance_m < 1.1684 || distance_m > 3.0226) {
-            targetVelocity = defaultVelocity;
+            targetVelocityRPM = defaultVelocity;
         }
         else {
              setVelocityByDistance(distance_m); // set target velocity in RPM
         }
 
-       // targetVelocity = convertRPMToRadiansPerSecond(targetVelocity); // target velocity now in Radians/sec
-
-        pidfController.setPIDF(vP,vI,vD,vF);
-        measuredVelocityTicks = motor.getCorrectedVelocity();
-        measuredVelocityRPM = convertTicksToRPM(measuredVelocityTicks);
-
-        // The error - sign (which finds velocity)
-        double error = targetVelocity - measuredVelocityRPM;
-
-        // We use zero because we already calculate for error
-        double additionalPower = pidfController.calculate(measuredVelocityTicks, 500);
-        power = power + additionalPower;
-        telemetry.addData("Power", power);
-        motor.set(power);
-        //motor.setVelocity(targetVelocity,RADIANS);
+        motor.setVeloCoefficients(vP,vI,vD);
+        motor.setFeedforwardCoefficients(ks,kv,ka);
+        targetVelocityTicks = convertRPMToTicks(targetVelocityRPM);
+        motor.setVelocity(targetVelocityTicks);
+        telemetry.addData("Target Velocity RPM", targetVelocityRPM);
+        telemetry.addData("Target Velocity Ticks", targetVelocityTicks);
+        telemetry.addData("Current Velocity Corrected", motor.getCorrectedVelocity());
     }
 
     private void createVelocityMap() {
@@ -85,23 +76,25 @@ public class Flywheel{
 
     }
 
-    public double setVelocityByDistance(double distance_m) {
+    public void setVelocityByDistance(double distance_m) {
 
-        targetVelocity = velocityMap.get(distance_m+0.3) *0.1;
-        return targetVelocity;
-    }
-
-    public double getTargetVelocity () {
-        return targetVelocity;
-    }
-
-    public double getMeasuredVelocityRPM () {
-        return measuredVelocityRPM;
+        targetVelocityRPM = velocityMap.get(distance_m+0.3);
     }
 
     private static double convertTicksToRPM(double ticksVelocity) {
         return (ticksVelocity*60)/28;
     }
+
+
+    private static double RPMToRadians(double RPMVelocity) {
+        return (RPMVelocity/60)*2*Math.PI;
+    }
+
+    private static double convertRPMToTicks(double RPMVelocity) {
+        return (RPMVelocity*28)/60;
+    }
+
+
 
 
 }

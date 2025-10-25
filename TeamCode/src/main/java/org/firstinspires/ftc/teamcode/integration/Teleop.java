@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp
 public class Teleop extends LinearOpMode {
-    Motor motor;
+    MotorEx motor;
     Limelight3A limelight;
     LimelightCamera limelightCamera;
     Flywheel flywheel;
@@ -25,7 +25,7 @@ public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        motor = new Motor(hardwareMap,"Motor", Motor.GoBILDA.BARE);
+        motor = new MotorEx(hardwareMap,"Motor", Motor.GoBILDA.BARE);
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         limelight.setPollRateHz(100);
@@ -51,10 +51,6 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("Z", limelightCamera.getZ());
 
             telemetry.addData("Flat Distance", limelightCamera.getFlatDistance());
-
-            telemetry.addData("Current Velocity Ticks", motor.getCorrectedVelocity());
-            telemetry.addData("Current Velocity RPM", flywheel.getMeasuredVelocityRPM());
-            telemetry.addData("Target Velocity RPM", flywheel.getTargetVelocity());
 
             telemetry.update();
         }
