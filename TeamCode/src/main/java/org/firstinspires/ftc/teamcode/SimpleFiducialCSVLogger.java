@@ -88,7 +88,7 @@ public class SimpleFiducialCSVLogger extends LinearOpMode {
                 telemetry.addData("Limelight", "No valid result");
             }
             telemetry.update();
-           // sleep(10);
+            sleep(10);
         }
 
         exportData();

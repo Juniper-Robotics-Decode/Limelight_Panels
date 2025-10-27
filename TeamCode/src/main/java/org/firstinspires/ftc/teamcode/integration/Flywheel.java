@@ -20,9 +20,9 @@ import java.lang.annotation.Target;
 @Config
 public class Flywheel{
     MotorEx motor;
-    public static double vP=0.005, vI=0, vD=0, vF = 0;
+    public static double vP=0.3, vI=0, vD=0, vF = 0;
 
-    public static double ks=0, kv=1.2235, ka=0;
+    public static double ks=0, kv=1.37, ka=0;
 
     public static double defaultVelocity = 0;  // RPM
 
@@ -39,14 +39,14 @@ public class Flywheel{
     public Flywheel (MotorEx flywheel, Telemetry telemetry) {
         motor = flywheel;
         motor.setRunMode(Motor.RunMode.VelocityControl);
-        //motor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         createVelocityMap();
         this.telemetry = telemetry;
     }
 
     public void updatePID(double distance_m) { // This method is used to update position every loop.
 
-        if(distance_m < 1.1684 || distance_m > 3.0226) {
+        if(distance_m < 0.9 || distance_m > 3.745) {
             targetVelocityRPM = defaultVelocity;
         }
         else {
@@ -56,6 +56,7 @@ public class Flywheel{
         motor.setVeloCoefficients(vP,vI,vD);
         motor.setFeedforwardCoefficients(ks,kv,ka);
         targetVelocityTicks = convertRPMToTicks(targetVelocityRPM);
+        targetVelocityTicks = -targetVelocityTicks;
         motor.setVelocity(targetVelocityTicks);
         telemetry.addData("Target Velocity RPM", targetVelocityRPM);
         telemetry.addData("Target Velocity Ticks", targetVelocityTicks);
@@ -67,10 +68,10 @@ public class Flywheel{
 
         // distance (m) , velocity (rpm)
 
-        velocityMap.add(1.1684, 1600);
-        velocityMap.add(2.032, 1725);
-        velocityMap.add(2.6416, 1775);
-        velocityMap.add(3.0226, 1795);
+        velocityMap.add(1.2, 3450);
+        velocityMap.add(2.048, 3642);
+        velocityMap.add(2.896, 3814);
+        velocityMap.add(3.745, 3942.85);
 
         velocityMap.createLUT();
 

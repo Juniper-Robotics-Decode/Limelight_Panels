@@ -59,6 +59,7 @@ public class PIDTest extends LinearOpMode {
         motor.setVeloCoefficients(vP,vI,vD);
         motor.setFeedforwardCoefficients(ks,kv,ka);
         targetVelocityTicks = convertRPMToTicks(targetVelocityRPM);
+        targetVelocityTicks = -targetVelocityTicks;
         motor.setVelocity(targetVelocityTicks);
         telemetry.addData("Target Velocity RPM", targetVelocityRPM);
         telemetry.addData("Target Velocity Ticks", targetVelocityTicks);

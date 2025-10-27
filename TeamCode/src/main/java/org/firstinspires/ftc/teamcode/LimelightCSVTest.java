@@ -90,6 +90,7 @@ public class LimelightCSVTest extends LinearOpMode {
             telemetry.addData("-", i);
             log();
             telemetry.update();
+
         }
 
         exportData();
