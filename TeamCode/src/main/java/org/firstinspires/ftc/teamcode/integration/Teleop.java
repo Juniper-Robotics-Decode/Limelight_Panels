@@ -52,6 +52,8 @@ public class Teleop extends LinearOpMode {
 
             telemetry.addData("Flat Distance", limelightCamera.getFlatDistance());
 
+            telemetry.addData("Has target", limelightCamera.hasTarget());
+
             telemetry.update();
         }
 

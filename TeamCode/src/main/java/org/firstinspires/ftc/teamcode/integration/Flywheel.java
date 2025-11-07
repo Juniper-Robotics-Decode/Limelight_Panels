@@ -20,9 +20,9 @@ import java.lang.annotation.Target;
 @Config
 public class Flywheel{
     MotorEx motor;
-    public static double vP=0.3, vI=0, vD=0, vF = 0;
+    public static double vP=3, vI=0, vD=0, vF = 0; // 0.3 p for just the first half
 
-    public static double ks=0, kv=1.37, ka=0;
+    public static double ks=0, kv=1.7, ka=0;  // 1.37 for just the first half
 
     public static double defaultVelocity = 0;  // RPM
 
@@ -79,7 +79,7 @@ public class Flywheel{
 
     public void setVelocityByDistance(double distance_m) {
 
-        targetVelocityRPM = velocityMap.get(distance_m+0.3);
+        targetVelocityRPM = velocityMap.get(distance_m+0.33);
     }
 
     private static double convertTicksToRPM(double ticksVelocity) {

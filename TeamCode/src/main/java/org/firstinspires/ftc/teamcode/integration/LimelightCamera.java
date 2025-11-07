@@ -21,7 +21,7 @@ public class LimelightCamera {
         limelight = limelight3A;
         limelight.setPollRateHz(100);
         limelight.start();
-        limelight.pipelineSwitch(1); // Make sure this is your fiducial pipeline
+        limelight.pipelineSwitch(1);
     }
 
     public void update() {
