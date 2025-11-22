@@ -13,6 +13,9 @@ import com.acmerobotics.dashboard.FtcDashboard;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
+import com.qualcomm.hardware.lynx.LynxModule;
 
 @TeleOp
 public class Teleop extends LinearOpMode {
@@ -27,6 +30,10 @@ public class Teleop extends LinearOpMode {
 
         motor = new MotorEx(hardwareMap,"Motor", Motor.GoBILDA.BARE);
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        /*DcMotorEx internalMotor = (DcMotorEx) motor;
+        LynxModule module = (LynxModule) internalMotor.getController();*/
+
+
 
         limelight.setPollRateHz(100);
         limelight.start();
@@ -37,12 +44,16 @@ public class Teleop extends LinearOpMode {
         limelightCamera = new LimelightCamera(limelight);
         flywheel = new Flywheel(motor,telemetry);
 
+
         waitForStart();
 
         while (opModeIsActive()) {
 
             limelightCamera.update();
             flywheel.updatePID(limelightCamera.getFlatDistance());
+
+
+      //      double current = module.getCurrent(CurrentUnit.AMPS);
 
             telemetry.addData("X", limelightCamera.getX());
 
@@ -52,7 +63,17 @@ public class Teleop extends LinearOpMode {
 
             telemetry.addData("Flat Distance", limelightCamera.getFlatDistance());
 
+            telemetry.addData("tx",limelightCamera.getTx());
+
             telemetry.addData("Has target", limelightCamera.hasTarget());
+
+            telemetry.addData("Voltage", hardwareMap.voltageSensor.iterator().next().getVoltage());
+
+          //  telemetry.addData("Current", current);
+
+            telemetry.addData("accel",motor.getAcceleration());
+
+
 
             telemetry.update();
         }

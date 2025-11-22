@@ -13,9 +13,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class PIDTest extends LinearOpMode {
 
     MotorEx motor;
-    public static double vP=0.005, vI=0, vD=0, vF = 0;
+    public static double vP=3, vI=0, vD=0, vF = 0;
 
-    public static double ks=0, kv=1.2235, ka=0;
+    public static double ks=0, kv=1.7, ka=0;
 
     public static double defaultVelocity = 0;  // RPM
 
@@ -33,6 +33,8 @@ public class PIDTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             updatePID();
+            telemetry.addData("Voltage", hardwareMap.voltageSensor.iterator().next().getVoltage());
+            telemetry.addData("accel", motor.getAcceleration());
             telemetry.update();
         }
     }

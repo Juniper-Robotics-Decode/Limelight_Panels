@@ -16,6 +16,7 @@ public class LimelightCamera {
     private double z_m = 0;
     private int targetID = 0;
     private double flatDistance_m = 0;
+    private double tx_degrees = 0;
 
     public LimelightCamera(Limelight3A limelight3A) {
         limelight = limelight3A;
@@ -47,6 +48,7 @@ public class LimelightCamera {
         x_m = fiducial.getCameraPoseTargetSpace().getPosition().x;
         y_m = fiducial.getCameraPoseTargetSpace().getPosition().y;
         z_m = fiducial.getCameraPoseTargetSpace().getPosition().z;
+        tx_degrees = result.getTx();
 
         flatDistance_m = Math.sqrt(x_m * x_m + z_m * z_m);
     }
@@ -66,6 +68,10 @@ public class LimelightCamera {
 
     public double getZ() {
         return z_m;
+    }
+
+    public double getTx() {
+        return tx_degrees;
     }
 
     public double getFlatDistance() {
