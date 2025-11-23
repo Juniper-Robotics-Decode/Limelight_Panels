@@ -39,11 +39,22 @@ public class LimelightCamera {
             return;
         }
 
-        // TODO: this boolean just becomes true if get to this point. Don't like. Also using the first tag we see
-        hasValidTarget = true;
-        LLResultTypes.FiducialResult fiducial = fiducials.get(0);
+        LLResultTypes.FiducialResult fiducial = null;
+        for (LLResultTypes.FiducialResult f : fiducials) {
+            if (f.getFiducialId() == 24) {
+                fiducial = f;
+                break;
+            }
+        }
 
+        if (fiducial == null) {
+            hasValidTarget = false;
+            return;
+        }
+
+        hasValidTarget = true;
         targetID = fiducial.getFiducialId();
+
 
         x_m = fiducial.getCameraPoseTargetSpace().getPosition().x;
         y_m = fiducial.getCameraPoseTargetSpace().getPosition().y;

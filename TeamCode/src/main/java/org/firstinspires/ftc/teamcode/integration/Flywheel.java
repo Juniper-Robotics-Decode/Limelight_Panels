@@ -46,11 +46,11 @@ public class Flywheel{
 
     public void updatePID(double distance_m) { // This method is used to update position every loop.
 
-        if(distance_m < 0.9 || distance_m > 3.745) {
+        if(distance_m < 0.9 || distance_m > 3.415) {
             targetVelocityRPM = defaultVelocity;
         }
         else {
-             setVelocityByDistance(distance_m); // set target velocity in RPM
+            setVelocityByDistance(distance_m); // set target velocity in RPM
         }
 
         motor.setVeloCoefficients(vP,vI,vD);
