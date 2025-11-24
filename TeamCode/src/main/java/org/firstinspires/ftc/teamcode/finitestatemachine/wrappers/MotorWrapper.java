@@ -1,4 +1,4 @@
-/*
+
 package org.firstinspires.ftc.teamcode.finitestatemachine.wrappers;
 
 import com.arcrobotics.ftclib.hardware.motors.Motor;
@@ -8,19 +8,25 @@ public class MotorWrapper {
     private final MotorEx motorEx;
     private double lastReadVelocity;
     private double lastReadPosition;
+    private double ratio;
+    private final double TICK_PER_REVOLUTION;
 
-    public MotorWrapper(MotorEx motorEx, boolean velocityControl) {
+    public MotorWrapper(MotorEx motorEx, boolean velocityControl, double ratio) {
         this.motorEx = motorEx;
         if (velocityControl) {
             motorEx.setRunMode(Motor.RunMode.VelocityControl);
         }
+
+        this.ratio = ratio;
+        TICK_PER_REVOLUTION = motorEx.motor.getMotorType().getTicksPerRev();
     }
 
-    */
+    // POWER
+
 /**
      Description: The set method is a wrapper of the motor set method
      @param : the power to set the motor at
-     *//*
+     */
 
     public void set(double power) {
         motorEx.set(power);
@@ -29,22 +35,22 @@ public class MotorWrapper {
     public double get() {
         return motorEx.get();
     }
-    */
+
+    // VELOCITY
 /**
      Description: The following method reads the encoder to get velocity of the motor
      @return: the velocity that is just read
-     *//*
+     */
 
-    public double readVelocity() {
+    public void readVelocity() {
         lastReadVelocity = motorEx.getCorrectedVelocity();
-        return lastReadVelocity;
     }
 
-    */
+
 /**
-     Description: The following method gets the velocity of the roller that was last read
+     Description: The following method gets the velocity of the motor that was last read
      @return: the velocity that was read before
-     *//*
+     */
 
     public double getVelocity() {
         return lastReadVelocity;
@@ -60,11 +66,23 @@ public class MotorWrapper {
 
     }
 
-    // TODO: add position
+    // POSITION
 
-    public double readPosition() {
-        re
+    public void readPosition() {
+        lastReadPosition = (motorEx.getCurrentPosition()*360)/TICK_PER_REVOLUTION;
+    }
+
+    public double getAngle() {
+        return lastReadPosition;
+    }
+
+    public double getScaledPos() {
+        return lastReadPosition*ratio;
+    }
+
+    public void resetEncoder() {
+        motorEx.resetEncoder();
     }
 
 }
-*/
+
