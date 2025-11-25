@@ -30,7 +30,7 @@ public class MainTeleop extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()) {
             gamepad.readButtons();
-            shooterFSM.updateState(gamepad.wasJustPressed(GamepadKeys.Button.Y));
+            shooterFSM.updateState(gamepad.wasJustPressed(GamepadKeys.Button.B));
             log();
         }
     }

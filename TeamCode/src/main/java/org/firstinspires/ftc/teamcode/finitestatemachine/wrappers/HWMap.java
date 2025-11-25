@@ -21,15 +21,8 @@ public class HWMap {
         pitchServo = new CRServo(hardwareMap, "PS");
         pitchEncoder = hardwareMap.get(AnalogInput.class, "PE");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        setupLimelight();
-
     }
 
-    private void setupLimelight() {
-        limelight.setPollRateHz(100);
-        limelight.start();
-        limelight.pipelineSwitch(1);
-    }
 
     public Limelight3A getLimelight() {
         return limelight;

@@ -19,6 +19,7 @@ public class ShooterFSM {
     private PitchFSM pitchFSM;
     private PositionFSM positionFSM;
     private States state;
+    private boolean flywheelStopping = false;
 
     private Telemetry telemetry;
     public ShooterFSM (HWMap hardwareMap, Telemetry telemetry) {
@@ -30,16 +31,18 @@ public class ShooterFSM {
         state = States.PREPARING_TO_SHOOT;
     }
 
-    public void updateState(boolean aPress) {
+    public void updateState(boolean bPress) {
         flywheelFSM.updateState();
         turretFSM.updateState();
         pitchFSM.updateState();
         positionFSM.updateState();
-        findTargetState(aPress);
+        findTargetState(bPress);
 
         switch (state) {
             case PREPARING_TO_SHOOT:
-                flywheelFSM.setTargetVelocityRPM(positionFSM.getFlywheelTargetVelocityRPM());
+                if(!flywheelStopping) {
+                    flywheelFSM.setTargetVelocityRPM(positionFSM.getFlywheelTargetVelocityRPM());
+                }
                 turretFSM.setTargetAngle(positionFSM.getTurretError());
                 pitchFSM.setTargetAngle(positionFSM.getPitchTargetAngle());
                 if(flywheelFSM.AT_TARGET_VELOCITY() && turretFSM.ALIGNED() && pitchFSM.ALIGNED()) {
@@ -49,20 +52,22 @@ public class ShooterFSM {
             case TOGGLING_FLYWHEEL:
                 if(flywheelFSM.STOPPED()) {
                     flywheelFSM.setTargetVelocityRPM(positionFSM.getFlywheelTargetVelocityRPM());
+                    flywheelStopping = false;
                 }
                 else {
                     flywheelFSM.setTargetVelocityRPM(0);
+                    flywheelStopping = true;
                 }
 
-                if(flywheelFSM.AT_TARGET_VELOCITY()) {
+                if(flywheelFSM.AT_TARGET_VELOCITY() || flywheelFSM.STOPPED()) {
                     state = States.TOGGLED_FLYWHEEL;
                 }
                 break;
         }
     }
 
-    public void findTargetState(boolean aPress) {
-        if(aPress) {
+    public void findTargetState(boolean bPress) {
+        if(bPress) {
             state = States.TOGGLING_FLYWHEEL;
         }
         else if(!(state == States.TOGGLING_FLYWHEEL)) {

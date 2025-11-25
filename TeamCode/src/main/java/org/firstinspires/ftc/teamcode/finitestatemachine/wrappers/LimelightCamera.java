@@ -5,6 +5,9 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.util.List;
 
 public class LimelightCamera {
@@ -18,23 +21,28 @@ public class LimelightCamera {
     private int targetID = 0;
     private double flatDistance_m = 0;
     private double tx_degrees = 0;
+    private Telemetry telemetry;
 
-    public LimelightCamera(Limelight3A limelight3A) {
+    public LimelightCamera(Limelight3A limelight3A, Telemetry telemetry) {
         limelight = limelight3A;
         limelight.setPollRateHz(100);
         limelight.start();
         limelight.pipelineSwitch(1);
+        this.telemetry = telemetry;
     }
 
     public void update() {
         LLResult result = limelight.getLatestResult();
-
-        if (result == null || !result.isValid()) {
+        telemetry.addData("is there a limelight result", !(result == null));
+        telemetry.addData("is there a valid limelight result", result.isValid());
+        if (result == null) { // || !result.isValid()
             hasValidTarget = false;
             return;
         }
 
         List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+        telemetry.addData("is there a fiducial result", !(fiducials == null));
+        telemetry.addData("is there a non-empty fiducial", !fiducials.isEmpty());
         if (fiducials == null || fiducials.isEmpty()) {
             hasValidTarget = false;
             return;
@@ -48,6 +56,7 @@ public class LimelightCamera {
             }
         }
 
+        telemetry.addData("was the target ID found", !(fiducial==null));
         if (fiducial == null) {
             hasValidTarget = false;
             return;
@@ -93,4 +102,5 @@ public class LimelightCamera {
     public int getTargetID() {
         return targetID;
     }
+
 }

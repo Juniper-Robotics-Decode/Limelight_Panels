@@ -44,7 +44,7 @@ public class PositionFSM {
     private Telemetry telemetry;
 
     public PositionFSM(HWMap hwMap, Telemetry telemetry) {
-        limelightCamera = new LimelightCamera(hwMap.getLimelight());
+        limelightCamera = new LimelightCamera(hwMap.getLimelight(), telemetry);
         state = States.NO_VALID_TARGET;
         createVelocityMap();
         this.telemetry = telemetry;
