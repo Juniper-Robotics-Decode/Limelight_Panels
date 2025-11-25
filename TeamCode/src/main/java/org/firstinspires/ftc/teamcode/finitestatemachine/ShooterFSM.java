@@ -16,6 +16,7 @@ public class ShooterFSM {
 
     private FlywheelFSM flywheelFSM;
     private TurretFSM turretFSM;
+    private PitchFSM pitchFSM;
     private PositionFSM positionFSM;
     private States state;
 
@@ -23,6 +24,7 @@ public class ShooterFSM {
     public ShooterFSM (HWMap hardwareMap, Telemetry telemetry) {
         flywheelFSM = new FlywheelFSM(hardwareMap,telemetry);
         turretFSM = new TurretFSM(hardwareMap,telemetry);
+        pitchFSM = new PitchFSM(hardwareMap,telemetry);
         positionFSM = new PositionFSM(hardwareMap,telemetry);
         this.telemetry = telemetry;
         state = States.PREPARING_TO_SHOOT;
@@ -31,6 +33,7 @@ public class ShooterFSM {
     public void updateState(boolean aPress) {
         flywheelFSM.updateState();
         turretFSM.updateState();
+        pitchFSM.updateState();
         positionFSM.updateState();
         findTargetState(aPress);
 
@@ -38,7 +41,8 @@ public class ShooterFSM {
             case PREPARING_TO_SHOOT:
                 flywheelFSM.setTargetVelocityRPM(positionFSM.getFlywheelTargetVelocityRPM());
                 turretFSM.setTargetAngle(positionFSM.getTurretError());
-                if(flywheelFSM.AT_TARGET_VELOCITY() && turretFSM.ALIGNED()) {
+                pitchFSM.setTargetAngle(positionFSM.getPitchTargetAngle());
+                if(flywheelFSM.AT_TARGET_VELOCITY() && turretFSM.ALIGNED() && pitchFSM.ALIGNED()) {
                     state = States.PREPARED_TO_SHOOT;
                 }
                 break;
@@ -70,6 +74,7 @@ public class ShooterFSM {
         telemetry.addData("shooter state", state);
         flywheelFSM.log();
         turretFSM.log();
+        pitchFSM.log();
         positionFSM.log();
     }
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.finitestatemachine;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeDegrees;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.AxonCRServoWra
 import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.HWMap;
 import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.MotorWrapper;
 
+@Config
 public class PitchFSM {
     public enum States{
         ALIGNING,
@@ -22,11 +24,14 @@ public class PitchFSM {
     private PIDFController pidfController;
     public static double TOLERANCE = 3;
     public static double P=0, I=0, D=0, F=0;
+    public static double UPPER_HARD_STOP = 30;
+    public static double LOWER_HARD_STOP = 0;
+
 
     Telemetry telemetry;
 
     public PitchFSM(HWMap hwMap, Telemetry telemetry) {
-       // pitchServo = new AxonCRServoWrapper(hwMap.ge) // TODO: gear ratio +
+        pitchServo = new AxonCRServoWrapper(hwMap.getPitchServo(),hwMap.getPitchEncoder(),false,false,0,1); // TODO: Change ratio
         state = States.ALIGNING;
         pidfController = new PIDFController(P,I,D,F);
         pidfController.setTolerance(TOLERANCE);
@@ -36,24 +41,30 @@ public class PitchFSM {
     public void updateState(){
         updatePID();
         if(pidfController.atSetPoint()) {
-            state = TurretFSM.States.ALIGNED;
+            state = States.ALIGNED;
         }
         else {
-            state = TurretFSM.States.ALIGNING;
+            state = States.ALIGNING;
         }
     }
 
     public void updatePID() {
+        if(targetAngle > UPPER_HARD_STOP) {
+            targetAngle = UPPER_HARD_STOP;
+        }
+        else if (targetAngle < LOWER_HARD_STOP) {
+            targetAngle = LOWER_HARD_STOP;
+        }
         pidfController.setPIDF(P,I,D,F);
         pidfController.setTolerance(TOLERANCE);
-        turretMotor.readPosition();
+        pitchServo.readPos();
 
-        double delta = angleDelta(turretMotor.getScaledPos(), targetAngle);
-        double sign = angleDeltaSign(turretMotor.getScaledPos(), targetAngle);
+        double delta = angleDelta(pitchServo.getScaledPos(), targetAngle);
+        double sign = angleDeltaSign(pitchServo.getScaledPos(), targetAngle);
         double error = delta * sign;
 
         double power = pidfController.calculate(error,0);
-        turretMotor.set(power);
+        pitchServo.set(power);
     }
 
     private double angleDelta(double measuredAngle, double targetAngle) {
@@ -64,18 +75,18 @@ public class PitchFSM {
         return -(Math.signum(normalizeDegrees(targetAngle - measuredAngle) - (360 - normalizeDegrees(targetAngle - measuredAngle))));
     }
 
-    public void setTargetAngle(double turretError) {
-        targetAngle = turretMotor.getScaledPos() + turretError;
+    public void setTargetAngle(double pitchTargetAngle) {
+        targetAngle = pitchTargetAngle;
     }
 
     public boolean ALIGNED() {
-        return state == TurretFSM.States.ALIGNED;
+        return state == States.ALIGNED;
     }
 
     public void log() {
-        telemetry.addData("turret state", state);
-        telemetry.addData("turret target angle", targetAngle);
-        telemetry.addData("turret current angle", turretMotor.getScaledPos());
+        telemetry.addData("pitch state", state);
+        telemetry.addData("pitch target angle", targetAngle);
+        telemetry.addData("pitch current angle", pitchServo.getScaledPos());
     }
 
 }

@@ -11,16 +11,16 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class HWMap {
     private final MotorEx flywheelMotor;
     private final MotorEx turretMotor;
-  /*  private final CRServo pitchServo;
+    private final CRServo pitchServo;
     private final AnalogInput pitchEncoder;
-  */  private final Limelight3A limelight;
+    private final Limelight3A limelight;
 
     public HWMap (HardwareMap hardwareMap) {
         flywheelMotor = new MotorEx(hardwareMap,"FM", Motor.GoBILDA.BARE);
         turretMotor = new MotorEx(hardwareMap,"TM", Motor.GoBILDA.RPM_1150); // TODO: get right RPM
-        /*pitchServo = new CRServo(hardwareMap, "PS");
+        pitchServo = new CRServo(hardwareMap, "PS");
         pitchEncoder = hardwareMap.get(AnalogInput.class, "PE");
-        */limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
         setupLimelight();
 
     }
@@ -43,11 +43,11 @@ public class HWMap {
         return turretMotor;
     }
 
-  /*  public CRServo getPitchServo() {
+    public CRServo getPitchServo() {
         return pitchServo;
     }
 
     public AnalogInput getPitchEncoder() {
         return pitchEncoder;
-    }*/
+    }
 }
