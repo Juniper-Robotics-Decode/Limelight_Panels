@@ -107,7 +107,9 @@ public class PositionFSM {
         if(state == States.NO_VALID_TARGET) {
             turretError = 0;
         }
-        turretError = tx;
+        else {
+            turretError = tx;
+        }
     }
 
     public double getFlywheelTargetVelocityRPM() {

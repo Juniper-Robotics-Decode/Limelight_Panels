@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.finitestatemachine;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.HWMap;
 import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.MotorWrapper;
 
+@Config
 public class FlywheelFSM {
     public enum States{
         AT_TARGET_VELOCITY,
