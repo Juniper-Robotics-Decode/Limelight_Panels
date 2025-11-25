@@ -38,7 +38,7 @@ public class PositionFSM {
     private double pitchTargetAngle;
     private double turretError;
 
-    private double LIMELIGHT_FORWARD_OFFSET;
+    private double LIMELIGHT_FORWARD_OFFSET = 0.33;
     private double threshold1 = 2, threshold2 = 3;
 
     private Telemetry telemetry;

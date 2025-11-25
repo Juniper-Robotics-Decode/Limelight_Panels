@@ -22,6 +22,7 @@ public class ShooterFSM {
     public ShooterFSM (HWMap hardwareMap, Telemetry telemetry) {
         flywheelFSM = new FlywheelFSM(hardwareMap,telemetry);
         positionFSM = new PositionFSM(hardwareMap,telemetry);
+        this.telemetry = telemetry;
         state = States.PREPARING_TO_SHOOT;
     }
 

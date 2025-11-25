@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.finitestatemachine;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -19,13 +20,13 @@ public class MainTeleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         try {
             this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-            gamepad = new GamepadEx(gamepad1);
             hwMap = new HWMap(hardwareMap);
+            gamepad = new GamepadEx(gamepad1);
             shooterFSM = new ShooterFSM(hwMap,telemetry);
         }catch (Exception e) {
-            telemetry.addData("Exception", e);
+            telemetry.addData("Exception", e.getMessage());
+            telemetry.update();
         }
-        telemetry.update();
         waitForStart();
         while(opModeIsActive()) {
             gamepad.readButtons();

@@ -14,7 +14,7 @@ public class FlywheelFSM {
 
     public static double ks=0, kv=1.7, ka=0;  // 1.37 for just the first half
 
-    public static double TOLERANCE = 200; // ticks
+    public static double TOLERANCE = 100; // ticks
 
 
     public static double targetVelocityRPM;
