@@ -54,7 +54,7 @@ public class AxonCRServoWrapper {
 
     // equal to mechanism angle
     public double getScaledPos() {
-        return lastReadPosition*ratio;
+        return (lastReadPosition*ratio);
     }
 
     public void setEncoderOffset(double offset) {

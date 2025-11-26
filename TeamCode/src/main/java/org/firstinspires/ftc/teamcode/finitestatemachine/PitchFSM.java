@@ -26,12 +26,13 @@ public class PitchFSM {
     public static double P=0, I=0, D=0, F=0;
     public static double UPPER_HARD_STOP = 30;
     public static double LOWER_HARD_STOP = 0;
+    public static double gearRatio = 1.0/12.0;
 
 
     Telemetry telemetry;
 
     public PitchFSM(HWMap hwMap, Telemetry telemetry) {
-        pitchServo = new AxonCRServoWrapper(hwMap.getPitchServo(),hwMap.getPitchEncoder(),false,false,0,1); // TODO: Change ratio
+        pitchServo = new AxonCRServoWrapper(hwMap.getPitchServo(),hwMap.getPitchEncoder(),false,false,0,gearRatio); // TODO: Change ratio
         state = States.ALIGNING;
         pidfController = new PIDFController(P,I,D,F);
         pidfController.setTolerance(TOLERANCE);

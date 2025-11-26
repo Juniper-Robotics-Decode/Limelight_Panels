@@ -42,6 +42,7 @@ public class MotorCurrent extends LinearOpMode {
 
             telemetry.addData("Control Hub Voltage", controlHubVoltage);
             telemetry.addData("Expansion Hub Voltage", expansionHubVoltage);
+            telemetry.addData("velocity ticks/sec", motor.getVelocity());
             telemetry.update();
         }
 

@@ -23,11 +23,12 @@ public class TurretFSM {
     private PIDFController pidfController;
     public static double TOLERANCE = 3;
     public static double P=0, I=0, D=0, F=0;
+    public static double gearRatio = 16.0/109.0;
     
     Telemetry telemetry;
 
     public TurretFSM(HWMap hwMap, Telemetry telemetry) {
-        turretMotor = new MotorWrapper(hwMap.getTurretMotor(),false,1); // TODO: Change ratio
+        turretMotor = new MotorWrapper(hwMap.getTurretMotor(),false,gearRatio); // TODO: Change ratio
         state = States.ALIGNING;
         pidfController = new PIDFController(P,I,D,F);
         pidfController.setTolerance(TOLERANCE);
