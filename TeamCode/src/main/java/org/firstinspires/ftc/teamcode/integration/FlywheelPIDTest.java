@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @Config
 @TeleOp
-public class PIDTest extends LinearOpMode {
+public class FlywheelPIDTest extends LinearOpMode {
 
     MotorEx motor;
     public static double vP=3, vI=0, vD=0, vF = 0;
@@ -25,7 +25,7 @@ public class PIDTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        motor = new MotorEx(hardwareMap,"Motor", Motor.GoBILDA.BARE);
+        motor = new MotorEx(hardwareMap,"FM", Motor.GoBILDA.BARE);
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         motor.setRunMode(Motor.RunMode.VelocityControl);

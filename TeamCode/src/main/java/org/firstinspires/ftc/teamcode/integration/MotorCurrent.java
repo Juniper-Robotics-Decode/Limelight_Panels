@@ -19,7 +19,7 @@ public class MotorCurrent extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        motor = hardwareMap.get(DcMotorEx.class,"Motor");
+        motor = hardwareMap.get(DcMotorEx.class,"FM");
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         waitForStart();
 
