@@ -24,8 +24,8 @@ public class PitchFSM {
     private PIDFController pidfController;
     public static double TOLERANCE = 3;
     public static double P=0, I=0, D=0, F=0;
-    public static double UPPER_HARD_STOP = 30;
-    public static double LOWER_HARD_STOP = 0;
+    public static double UPPER_HARD_STOP = 29;
+    public static double LOWER_HARD_STOP = 10;
     public static double gearRatio = 1.0/12.0;
 
 

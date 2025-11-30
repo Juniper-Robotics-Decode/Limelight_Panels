@@ -10,7 +10,7 @@ public class PositionFSM {
 
     public enum States {
         ZONE_1(10),
-        ZONE_2(20),
+        ZONE_2(25),
         ZONE_3(30),
         NO_VALID_TARGET;
 

@@ -52,7 +52,6 @@ public class Flywheel{
         else {
             setVelocityByDistance(distance_m); // set target velocity in RPM
         }
-
         motor.setVeloCoefficients(vP,vI,vD);
         motor.setFeedforwardCoefficients(ks,kv,ka);
         targetVelocityTicks = convertRPMToTicks(targetVelocityRPM);

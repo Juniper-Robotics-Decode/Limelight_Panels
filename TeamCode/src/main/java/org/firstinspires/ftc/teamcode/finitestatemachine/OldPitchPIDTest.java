@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.finitestatemachine;
 
 
+
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeDegrees;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -15,14 +16,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.AxonCRServoWrapper;
 import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.HWMap;
 import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.MotorWrapper;
-import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.NewAxonServo;
 
 @Config
 @TeleOp
-public class PitchPIDTest extends LinearOpMode {
+public class OldPitchPIDTest extends LinearOpMode {
 
     HWMap hwMap;
-    private NewAxonServo pitchServo;
+    private AxonCRServoWrapper pitchServo;
     public static double targetAngle;
 
     private PIDFController pidfController;
@@ -36,8 +36,9 @@ public class PitchPIDTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         hwMap = new HWMap(hardwareMap);
-        pitchServo = new NewAxonServo(hwMap.getPitchServo(),hwMap.getPitchEncoder(),false,false,0,gearRatio); // TODO: Change ratio
+        pitchServo = new AxonCRServoWrapper(hwMap.getPitchServo(),hwMap.getPitchEncoder(),false,false,0,gearRatio); // TODO: Change ratio
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         pidfController = new PIDFController(P,I,D,F);
         pidfController.setTolerance(TOLERANCE);
 
@@ -63,13 +64,12 @@ public class PitchPIDTest extends LinearOpMode {
         pidfController.setTolerance(TOLERANCE);
         pitchServo.readPos();
 
-        double error = targetAngle - pitchServo.getScaledPos();
+        double delta = angleDelta(pitchServo.getScaledPos(), targetAngle);
+        double sign = angleDeltaSign(pitchServo.getScaledPos(), targetAngle);
+        double error = delta * sign;
 
-        telemetry.addData("error", error);
-
-        double power = pidfController.calculate(pitchServo.getScaledPos(),targetAngle);
-        telemetry.addData("power", power);
-       pitchServo.set(power);
+        double power = pidfController.calculate(error,0);
+        pitchServo.set(power);
     }
 
 
@@ -84,4 +84,5 @@ public class PitchPIDTest extends LinearOpMode {
 
 
 }
+
 
