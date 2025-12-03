@@ -22,16 +22,20 @@ public class TurretFSM {
 
     private PIDFController pidfController;
     public static double TOLERANCE = 3;
-    public static double P=0, I=0, D=0, F=0;
+    public static double P=0.17, I=0, D=0, F=0.00;
     public static double gearRatio = 16.0/109.0;
 
-    public static double UPPER_HARD_STOP = 90;
-    public static double LOWER_HARD_STOP = -90;
+    public static double UPPER_HARD_STOP = 110;
+    public static double LOWER_HARD_STOP = -110;
+
+    public static double POWER_CAP = 0.8;
+    int i = 0;
     
     Telemetry telemetry;
 
     public TurretFSM(HWMap hwMap, Telemetry telemetry) {
-        turretMotor = new MotorWrapper(hwMap.getTurretMotor(),false,gearRatio); // TODO: Change ratio
+        turretMotor = new MotorWrapper(hwMap.getTurretMotor(),false,gearRatio);
+        turretMotor.resetEncoder();
         state = States.ALIGNING;
         pidfController = new PIDFController(P,I,D,F);
         pidfController.setTolerance(TOLERANCE);
@@ -49,7 +53,6 @@ public class TurretFSM {
     }
 
     public void updatePID() {
-
         pidfController.setPIDF(P,I,D,F);
         pidfController.setTolerance(TOLERANCE);
         turretMotor.readPosition();
@@ -60,12 +63,19 @@ public class TurretFSM {
         else if (targetAngle < LOWER_HARD_STOP) {
             targetAngle = LOWER_HARD_STOP;
         }
-
+/*
         double delta = angleDelta(turretMotor.getScaledPos(), targetAngle);
-        double sign = angleDeltaSign(turretMotor.getScaledPos(), targetAngle);
-        double error = delta * sign;
+        double sign = angleDeltaSign(turretMotor.getScaledPos(), targetAngle);*/
+        double error = targetAngle - turretMotor.getScaledPos();
+        telemetry.addData("Error", error);
 
-        double power = pidfController.calculate(error,0);
+        /*F = F*Math.signum(error);
+         */
+        double power = pidfController.calculate(turretMotor.getScaledPos(),targetAngle);
+        if(Math.abs(power) > POWER_CAP) {
+            double signPower = Math.signum(power);
+            power = signPower*POWER_CAP;
+        }
         turretMotor.set(power);
     }
 
@@ -78,7 +88,16 @@ public class TurretFSM {
     }
 
     public void setTargetAngle(double turretError) {
-        targetAngle = turretMotor.getScaledPos() + turretError;
+        if(i >= 50) {
+            targetAngle = turretMotor.getScaledPos() + turretError;
+            i = 0;
+        }
+        else {
+            targetAngle = targetAngle;
+            i++;
+        }
+
+        telemetry.addData("Turret target angle counter", i);
     }
     
     public boolean ALIGNED() {

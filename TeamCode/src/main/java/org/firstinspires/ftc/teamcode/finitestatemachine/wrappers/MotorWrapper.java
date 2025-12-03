@@ -18,7 +18,7 @@ public class MotorWrapper {
         }
 
         this.ratio = ratio;
-        TICK_PER_REVOLUTION = motorEx.motor.getMotorType().getTicksPerRev();
+        TICK_PER_REVOLUTION = 145.1;
     }
 
     // POWER
@@ -69,7 +69,15 @@ public class MotorWrapper {
     // POSITION
 
     public void readPosition() {
-        lastReadPosition = (motorEx.getCurrentPosition()*360)/TICK_PER_REVOLUTION;
+        lastReadPosition = (motorEx.getCurrentPosition()/TICK_PER_REVOLUTION)*360;
+    }
+
+    public double getTicksPerRev() {
+        return TICK_PER_REVOLUTION;
+    }
+
+    public double readandGetPosTicks() {
+        return motorEx.getCurrentPosition();
     }
 
     public double getAngle() {
@@ -81,7 +89,7 @@ public class MotorWrapper {
     }
 
     public void resetEncoder() {
-        motorEx.resetEncoder();
+        motorEx.stopAndResetEncoder();
     }
 
 }

@@ -9,9 +9,9 @@ import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.LimelightCamer
 public class PositionFSM {
 
     public enum States {
-        ZONE_1(10),
-        ZONE_2(25),
-        ZONE_3(30),
+        ZONE_1(11),
+        ZONE_2(11),
+        ZONE_3(11),
         NO_VALID_TARGET;
 
         private double targetAngle;
@@ -38,7 +38,7 @@ public class PositionFSM {
     private double pitchTargetAngle;
     private double turretError;
 
-    private double LIMELIGHT_FORWARD_OFFSET = 0.33;
+    private double LIMELIGHT_FORWARD_OFFSET = -0.16;
     private double threshold1 = 2, threshold2 = 3;
 
     private Telemetry telemetry;
@@ -69,7 +69,7 @@ public class PositionFSM {
 
         findFlywheelTargetVelocity(limelightCamera.getFlatDistance());
         findPitchTargetAngle();
-        findTurretError(limelightCamera.getTx());
+        findTurretError(limelightCamera.getTy());
     }
 
     private void createVelocityMap() {
@@ -77,17 +77,16 @@ public class PositionFSM {
 
         // distance (m) , velocity (rpm)
 
-        velocityMap.add(1.2, 3450);
-        velocityMap.add(2.048, 3642);
-        velocityMap.add(2.896, 3814);
-        velocityMap.add(3.745, 3942.85);
+        velocityMap.add(1.2, 3300);
+        velocityMap.add(1.45, 3500);
+        velocityMap.add(2.04, 3700);
 
         velocityMap.createLUT();
 
     }
 
     public void findFlywheelTargetVelocity(double distance_m) {
-        if(distance_m < 0.9 || distance_m > 3.415) {
+        if(distance_m < 1.36 || distance_m > 2.1) {
             flywheelTargetVelocityRPM = defaultFlywheelVelocity;
         }
         else {
@@ -103,12 +102,12 @@ public class PositionFSM {
         pitchTargetAngle = state.getTargetAngle();
     }
 
-    public void findTurretError(double tx) {
+    public void findTurretError(double ty) {
         if(state == States.NO_VALID_TARGET) {
             turretError = 0;
         }
         else {
-            turretError = tx;
+            turretError = ty;
         }
     }
 
@@ -135,6 +134,7 @@ public class PositionFSM {
         telemetry.addData("Z", limelightCamera.getZ());
         telemetry.addData("Flat Distance", limelightCamera.getFlatDistance());
         telemetry.addData("tx",limelightCamera.getTx());
+        telemetry.addData("ty", limelightCamera.getTy());
         telemetry.addData("Has target", limelightCamera.hasTarget());
     }
 

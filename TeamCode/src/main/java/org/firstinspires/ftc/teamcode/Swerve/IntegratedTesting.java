@@ -8,6 +8,7 @@ import static java.lang.Math.hypot;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.pedropathing.localization.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -24,6 +25,8 @@ import org.firstinspires.ftc.teamcode.Geo.MathUtils;
 import org.firstinspires.ftc.teamcode.Geo.Point;
 import org.firstinspires.ftc.teamcode.Geo.Pose;
 import org.firstinspires.ftc.teamcode.Hardware.AbsoluteAnalogEncoder;
+import org.firstinspires.ftc.teamcode.finitestatemachine.ShooterFSM;
+import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.HWMap;
 import org.firstinspires.ftc.teamcode.intaketransfer.IntakeFSM;
 import org.firstinspires.ftc.teamcode.intaketransfer.Intaketransferhwmap;
 import org.firstinspires.ftc.teamcode.intaketransfer.TransferFSM;
@@ -78,11 +81,11 @@ public class IntegratedTesting extends LinearOpMode {
 
 
     private Intaketransferhwmap intaketransferhwmap;
-    //  private HWMap hwMap;
-    //private GamepadEx gamepad;
+    private HWMap hwMap;
+    private GamepadEx gamepad;
     private IntakeFSM intakeFSM;
     private TransferFSM transferFSM;
-    //private ShooterFSM shooterFSM;
+    private ShooterFSM shooterFSM;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -146,9 +149,10 @@ public class IntegratedTesting extends LinearOpMode {
         telemetry.update();
 
         intaketransferhwmap = new Intaketransferhwmap(hardwareMap);
+        hwMap = new HWMap(hardwareMap);
         intakeFSM = new IntakeFSM(intaketransferhwmap, telemetry);
         transferFSM = new TransferFSM(intaketransferhwmap, telemetry);
-        //shooterFSM = new ShooterFSM(hwMap,telemetry);
+        shooterFSM = new ShooterFSM(hwMap,telemetry);
 
 
         waitForStart();
@@ -223,7 +227,7 @@ if (x == 0 && y == 0 && heading == 0){
 
             intakeFSM.updateState(gamepad1.y, gamepad1.dpad_left);
             transferFSM.updateState(gamepad1.dpad_right, gamepad1.right_bumper);
-            //shooterFSM.updateState(gamepad1.b);
+            shooterFSM.updateState(gamepad1.b);
 
 
             telemetry.addData("front left target angle", Arrays.toString(wa));
