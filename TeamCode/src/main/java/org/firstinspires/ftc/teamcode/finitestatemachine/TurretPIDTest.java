@@ -25,18 +25,19 @@ public class TurretPIDTest extends LinearOpMode {
 
     private PIDFController pidfController;
     public static double TOLERANCE = 3;
-    public static double P=0.0, I=0, D=0, F=0.00;
+    public static double P=0.2, I=0, D=0, F=0.00001;
     public static double gearRatio = 16.0/109.0;
 
     public static double UPPER_HARD_STOP = 0;
-    public static double LOWER_HARD_STOP = -220;
+    public static double LOWER_HARD_STOP = -110;
 
-    public static double POWER_CAP = 0.6;
+    public static double POWER_CAP = 1;
 
     @Override
     public void runOpMode() throws InterruptedException {
         hwMap = new HWMap(hardwareMap);
         turretMotor = new MotorWrapper(hwMap.getTurretMotor(),false,gearRatio);
+        turretMotor.resetEncoder();
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         pidfController = new PIDFController(P,I,D,F);
 

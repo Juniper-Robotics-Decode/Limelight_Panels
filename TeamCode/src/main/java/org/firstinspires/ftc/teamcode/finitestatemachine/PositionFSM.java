@@ -9,9 +9,9 @@ import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.LimelightCamer
 public class PositionFSM {
 
     public enum States {
-        ZONE_1(11),
-        ZONE_2(11),
-        ZONE_3(11),
+        ZONE_1(13),
+        ZONE_2(22.5),
+        ZONE_3(22.5),
         NO_VALID_TARGET;
 
         private double targetAngle;
@@ -38,8 +38,8 @@ public class PositionFSM {
     private double pitchTargetAngle;
     private double turretError;
 
-    private double LIMELIGHT_FORWARD_OFFSET = -0.16;
-    private double threshold1 = 2, threshold2 = 3;
+    private double LIMELIGHT_FORWARD_OFFSET = 0;
+    private double threshold1 = 2.5, threshold2 = 3;
 
     private Telemetry telemetry;
 
@@ -77,16 +77,17 @@ public class PositionFSM {
 
         // distance (m) , velocity (rpm)
 
-        velocityMap.add(1.2, 3300);
-        velocityMap.add(1.45, 3500);
-        velocityMap.add(2.04, 3700);
+        velocityMap.add(1.24, 3500);
+        velocityMap.add(1.6, 3500);
+        velocityMap.add(2.11, 3600);
+        velocityMap.add(2.8, 4000);
 
         velocityMap.createLUT();
 
     }
 
     public void findFlywheelTargetVelocity(double distance_m) {
-        if(distance_m < 1.36 || distance_m > 2.1) {
+        if(distance_m < 1.24 || distance_m > 2.8) {
             flywheelTargetVelocityRPM = defaultFlywheelVelocity;
         }
         else {

@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.HWMap;
 import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.NewAxonServo;
+import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.LimelightCamera;
 import org.firstinspires.ftc.teamcode.intaketransfer.IntakeFSM;
 import org.firstinspires.ftc.teamcode.intaketransfer.Intaketransferhwmap;
 import org.firstinspires.ftc.teamcode.intaketransfer.TransferFSM;
@@ -26,6 +27,7 @@ public class transferAndFlywheel extends LinearOpMode {
 
     HWMap hwMap;
     private NewAxonServo pitchServo;
+    private LimelightCamera limelightCamera;
     public static double targetAngle;
 
     private PIDFController pidfController;
@@ -60,11 +62,13 @@ public class transferAndFlywheel extends LinearOpMode {
         hwMap = new HWMap(hardwareMap);
         pitchServo = new NewAxonServo(hwMap.getPitchServo(),hwMap.getPitchEncoder(),false,false,0,gearRatio); // TODO: Change ratio
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        limelightCamera = new LimelightCamera(hwMap.getLimelight(),telemetry);
         pidfController = new PIDFController(P,I,D,F);
         pidfController.setTolerance(TOLERANCE);
 
         waitForStart();
         while (opModeIsActive()) {
+            limelightCamera.update();
             transferFSM.updateState(gamepad1.dpad_right, gamepad1.right_bumper);
             intakeFSM.updateState(gamepad1.y, gamepad1.dpad_left);
             updatePID();
@@ -75,6 +79,16 @@ public class transferAndFlywheel extends LinearOpMode {
             telemetry.addData("pitch target angle", targetAngle);
             telemetry.addData("pitch servo current angle", pitchServo.getServoAngle());
             telemetry.addData("pitch current angle", pitchServo.getScaledPos());
+
+
+            telemetry.addData("X", limelightCamera.getX());
+            telemetry.addData("Y", limelightCamera.getY());
+            telemetry.addData("Z", limelightCamera.getZ());
+            telemetry.addData("Flat Distance", limelightCamera.getFlatDistance());
+            telemetry.addData("tx",limelightCamera.getTx());
+            telemetry.addData("ty", limelightCamera.getTy());
+            telemetry.addData("Has target", limelightCamera.hasTarget());
+
 
             telemetry.update();
         }

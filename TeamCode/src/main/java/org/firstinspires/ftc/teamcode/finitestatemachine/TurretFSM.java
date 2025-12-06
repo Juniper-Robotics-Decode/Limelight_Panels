@@ -22,13 +22,16 @@ public class TurretFSM {
 
     private PIDFController pidfController;
     public static double TOLERANCE = 3;
-    public static double P=0.17, I=0, D=0, F=0.00;
+    public static double P=0.2, I=0, D=0, F=0.00001;
     public static double gearRatio = 16.0/109.0;
 
-    public static double UPPER_HARD_STOP = 110;
+    public static double UPPER_HARD_STOP = 0;
     public static double LOWER_HARD_STOP = -110;
 
-    public static double POWER_CAP = 0.8;
+    public static double POWER_CAP = 1;
+
+    public static double TURRET_OFFSET = 3;
+
     int i = 0;
     
     Telemetry telemetry;
@@ -89,7 +92,7 @@ public class TurretFSM {
 
     public void setTargetAngle(double turretError) {
         if(i >= 50) {
-            targetAngle = turretMotor.getScaledPos() + turretError;
+            targetAngle = turretMotor.getScaledPos() + turretError + TURRET_OFFSET;
             i = 0;
         }
         else {

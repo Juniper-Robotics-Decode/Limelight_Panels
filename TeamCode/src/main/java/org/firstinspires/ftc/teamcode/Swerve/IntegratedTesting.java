@@ -56,9 +56,10 @@ public class IntegratedTesting extends LinearOpMode {
 
     //FL, BL, BR, FR
     private AbsoluteAnalogEncoder AFLE, AFRE, ABLE, ABRE;
-    public static double zeros[] = new double[]{0.2, 3.1, 3.3, 0.3};
+    public static double zeros[] = new double[]{0.2, 1.1, 3.3, 0.3};
     public static boolean inverses[] = new boolean[]{false,false,false,false};
-    public static double MotorScaling[] = new double[]{1,1,1,1}; //dont make negative inverse the encoder
+    public static double MotorScaling[] = new double[]{0.8,0.8,1,0.8}; //dont make negative inverse the encoder
+
 
     GoBildaPinpointDriver odo;
 
@@ -159,8 +160,7 @@ public class IntegratedTesting extends LinearOpMode {
         runtime.reset();
 
         while (opModeIsActive()) {
-
-
+            telemetry.addData("ALLIANCE", MainAuto.ALLIANCE);
             AFLE.zero(zeros[0]);
             AFLE.setInverted(inverses[0]);
 
@@ -211,9 +211,9 @@ public class IntegratedTesting extends LinearOpMode {
 
             MAX = MathUtils.max(ws);
 
-if (x == 0 && y == 0 && heading == 0){
+/*if (x == 0 && y == 0 && heading == 0){
                 wa = new double[]{atan2(1,1), atan2(-1, 1), atan2(-1, -1), atan2(1, -1)};
-            }
+            }*/
 
 
             for (int i = 0; i < 4; i++) {
@@ -230,6 +230,7 @@ if (x == 0 && y == 0 && heading == 0){
             shooterFSM.updateState(gamepad1.b);
 
 
+            shooterFSM.log();
             telemetry.addData("front left target angle", Arrays.toString(wa));
             telemetry.addData("front left voltage", AFLE.getVoltage());
             telemetry.addData("front right voltage", AFRE.getVoltage());

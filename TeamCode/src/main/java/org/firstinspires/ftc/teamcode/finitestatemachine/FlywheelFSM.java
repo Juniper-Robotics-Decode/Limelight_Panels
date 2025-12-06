@@ -30,6 +30,8 @@ public class FlywheelFSM {
 
     private States state;
 
+    private boolean stopping = false;
+
     public FlywheelFSM(HWMap hwMap, Telemetry telemetry) {
         flywheelMotor = new MotorWrapper(hwMap.getFlywheelMotor(),true,1);
         this.telemetry = telemetry;
@@ -48,6 +50,17 @@ public class FlywheelFSM {
 
 
     public void updatePID() { // This method is used to update position every loop.
+        if(targetVelocityRPM == 0 && !stopping) {
+            stopping = true;
+            targetVelocityRPM = flywheelMotor.getVelocity();
+        }
+        if(stopping) {
+            targetVelocityRPM = targetVelocityRPM - 50;
+        }
+        if(targetVelocityRPM <= 0){
+            targetVelocityRPM = 0;
+            stopping = false;
+        }
         flywheelMotor.readVelocity();
         flywheelMotor.setVelocityConstants(vP,vI,vD,ks,kv,ka);
         targetVelocityTicks = convertRPMToTicks(targetVelocityRPM);
@@ -77,6 +90,7 @@ public class FlywheelFSM {
 
 
     public void log() {
+        telemetry.addData("flywheel stopping varialbe", stopping);
         telemetry.addData("Flywheel FSM state", state);
         telemetry.addData("Target Velocity RPM", targetVelocityRPM);
         telemetry.addData("Target Velocity Ticks", targetVelocityTicks);

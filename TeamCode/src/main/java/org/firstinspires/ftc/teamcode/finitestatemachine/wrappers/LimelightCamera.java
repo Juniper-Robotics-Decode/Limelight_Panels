@@ -7,6 +7,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Swerve.MainAuto;
 
 import java.util.List;
 
@@ -51,10 +52,21 @@ public class LimelightCamera {
 
         LLResultTypes.FiducialResult fiducial = null;
         for (LLResultTypes.FiducialResult f : fiducials) {
-            if (f.getFiducialId() == 24) {
-                fiducial = f;
-                break;
+            if(MainAuto.ALLIANCE.equals("RED")) {
+                if (f.getFiducialId() == 24) {
+                    fiducial = f;
+                    break;
+                }
             }
+
+            else if (MainAuto.ALLIANCE.equals("BLUE")) {
+                if (f.getFiducialId() == 20) {
+                    fiducial = f;
+                    break;
+                }
+            }
+
+
         }
 
         telemetry.addData("was the target ID found", !(fiducial==null));

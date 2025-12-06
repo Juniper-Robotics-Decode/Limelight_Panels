@@ -21,15 +21,15 @@ public class TransferServoFSM {
     private ServoWrapper transferServo;
     public State currentState;
     public double currentPosition = 0;
-    public static double targetPosition = 0;
-    public static double positionUp = .25;
-    public static double positionDown = 0;
+    public static double targetPosition = 0.55;
+    public static double positionUp = .85;
+    public static double positionDown = 0.55;
     Timing.Timer timer;
 
 
     public TransferServoFSM(Intaketransferhwmap intaketransferhwmap, Telemetry telemetry) {
         transferServo = new ServoWrapper(intaketransferhwmap.getTransferServo());
-        timer = new Timing.Timer(1000, TimeUnit.MILLISECONDS);
+        timer = new Timing.Timer(150, TimeUnit.MILLISECONDS);
         this.telemetry = telemetry;
         currentState = State.AT_DOWN;
     }
