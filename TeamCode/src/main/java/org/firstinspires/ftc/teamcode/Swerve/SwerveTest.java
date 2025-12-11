@@ -50,7 +50,7 @@ public class SwerveTest extends LinearOpMode {
 
     //FL, BL, BR, FR
     private AbsoluteAnalogEncoder AFLE, AFRE, ABLE, ABRE;
-    public static double zeros[] = new double[]{0.2, 3.1, 3.3, 0.3};
+    public static double zeros[] = new double[]{-0.25, 1, 3.2, 0.3};
     public static boolean inverses[] = new boolean[]{false,false,false,false};
     public static double MotorScaling[] = new double[]{1,1,1,1}; //dont make negative inverse the encoder
 
@@ -174,7 +174,7 @@ public class SwerveTest extends LinearOpMode {
                 heading = 0;
             }
 
-            Pose drive = new Pose((new Point(x,y).rotate(BotHeading)), heading);
+            Pose drive = new Pose((new Point(x,y).rotate(BotHeading)), -heading);
 
             double R = hypot(wheelbase, trackwidth);
 

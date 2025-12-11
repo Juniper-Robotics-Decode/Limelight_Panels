@@ -56,7 +56,7 @@ public class IntegratedTesting extends LinearOpMode {
 
     //FL, BL, BR, FR
     private AbsoluteAnalogEncoder AFLE, AFRE, ABLE, ABRE;
-    public static double zeros[] = new double[]{0.2, 1.1, 3.3, 0.3};
+    public static double zeros[] = new double[]{-0.4, 1, 3.2, 0.3};
     public static boolean inverses[] = new boolean[]{false,false,false,false};
     public static double MotorScaling[] = new double[]{0.8,0.8,1,0.8}; //dont make negative inverse the encoder
 
@@ -196,7 +196,7 @@ public class IntegratedTesting extends LinearOpMode {
                 heading = 0;
             }
 
-            Pose drive = new Pose((new Point(x,y).rotate(BotHeading)), heading);
+            Pose drive = new Pose((new Point(x,y).rotate(BotHeading)), -heading);
 
             double R = hypot(wheelbase, trackwidth);
 

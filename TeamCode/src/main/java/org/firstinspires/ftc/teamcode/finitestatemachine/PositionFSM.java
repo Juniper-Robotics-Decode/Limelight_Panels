@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.finitestatemachine.wrappers.LimelightCamer
 public class PositionFSM {
 
     public enum States {
-        ZONE_1(13),
+        ZONE_1(13),   // TODO: check does pitch at 22.5 equal like almost 360?
         ZONE_2(22.5),
         ZONE_3(22.5),
         NO_VALID_TARGET;
