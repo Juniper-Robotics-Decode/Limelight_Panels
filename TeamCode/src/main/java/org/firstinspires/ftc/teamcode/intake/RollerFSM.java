@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.core.Intaketransferhwmap;
+import org.firstinspires.ftc.teamcode.core.HWMap;
 import org.firstinspires.ftc.teamcode.core.MotorWrapper;
 
 
@@ -30,7 +30,7 @@ public class RollerFSM {
     }
 
 
-    public RollerFSM(Intaketransferhwmap hwMap, Telemetry telemetry) {
+    public RollerFSM(HWMap hwMap, Telemetry telemetry) {
         intakeMotor = new MotorWrapper(hwMap.getIntakeMotor(), true, 1);
         this.telemetry = telemetry;
         State = State.STOPPED;

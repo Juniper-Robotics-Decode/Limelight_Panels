@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.intake;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.core.Intaketransferhwmap;
+import org.firstinspires.ftc.teamcode.core.HWMap;
 
 
 public class IntakeFSM {
@@ -20,7 +20,7 @@ public class IntakeFSM {
     private State currentState = State.RAMPING_UP_TO_INTAKE;
     private Telemetry telemetry;
 
-    public IntakeFSM(Intaketransferhwmap hardwareMap, Telemetry telemetry) {
+    public IntakeFSM(HWMap hardwareMap, Telemetry telemetry) {
         Roller = new RollerFSM(hardwareMap, telemetry);
         this.telemetry = telemetry;
     }

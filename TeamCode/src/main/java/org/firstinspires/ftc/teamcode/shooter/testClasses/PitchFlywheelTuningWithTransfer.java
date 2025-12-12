@@ -13,14 +13,12 @@ import org.firstinspires.ftc.teamcode.core.HWMap;
 import org.firstinspires.ftc.teamcode.shooter.wrappers.NewAxonServo;
 import org.firstinspires.ftc.teamcode.shooter.wrappers.LimelightCamera;
 import org.firstinspires.ftc.teamcode.intake.IntakeFSM;
-import org.firstinspires.ftc.teamcode.core.Intaketransferhwmap;
 import org.firstinspires.ftc.teamcode.intaketransfer.TransferFSM;
 
 @Config
 @TeleOp
 public class PitchFlywheelTuningWithTransfer extends LinearOpMode {
 
-    Intaketransferhwmap intaketransferhwmap;
     TransferFSM transferFSM;
     IntakeFSM intakeFSM;
     MotorEx motor;
@@ -51,15 +49,14 @@ public class PitchFlywheelTuningWithTransfer extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        intaketransferhwmap = new Intaketransferhwmap(hardwareMap);
-        intakeFSM = new IntakeFSM(intaketransferhwmap,telemetry);
-        transferFSM = new TransferFSM(intaketransferhwmap, telemetry);
+        hwMap = new HWMap(hardwareMap);
+        intakeFSM = new IntakeFSM(hwMap,telemetry);
+        transferFSM = new TransferFSM(hwMap, telemetry);
         motor = new MotorEx(hardwareMap,"FM", Motor.GoBILDA.BARE);
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         motor.setRunMode(Motor.RunMode.VelocityControl);
 
-        hwMap = new HWMap(hardwareMap);
         pitchServo = new NewAxonServo(hwMap.getPitchServo(),hwMap.getPitchEncoder(),false,false,0,gearRatio); // TODO: Change ratio
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         limelightCamera = new LimelightCamera(hwMap.getLimelight(),telemetry);

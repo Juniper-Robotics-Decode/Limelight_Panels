@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.util.Timing;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.core.Intaketransferhwmap;
+import org.firstinspires.ftc.teamcode.core.HWMap;
 
 
 import java.util.concurrent.TimeUnit;
@@ -28,7 +28,7 @@ public class TransferServoFSM {
     Timing.Timer timer;
 
 
-    public TransferServoFSM(Intaketransferhwmap intaketransferhwmap, Telemetry telemetry) {
+    public TransferServoFSM(HWMap intaketransferhwmap, Telemetry telemetry) {
         transferServo = new ServoWrapper(intaketransferhwmap.getTransferServo());
         timer = new Timing.Timer(150, TimeUnit.MILLISECONDS);
         this.telemetry = telemetry;

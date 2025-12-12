@@ -34,7 +34,7 @@ import java.util.Arrays;
 
 @Config
 @TeleOp
-public class IntegratedTesting extends LinearOpMode {
+public class MainTeleOp extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -80,7 +80,6 @@ public class IntegratedTesting extends LinearOpMode {
     private double MAX;
 
 
-    private Intaketransferhwmap intaketransferhwmap;
     private HWMap hwMap;
     private GamepadEx gamepad;
     private IntakeFSM intakeFSM;
@@ -148,10 +147,9 @@ public class IntegratedTesting extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        intaketransferhwmap = new Intaketransferhwmap(hardwareMap);
         hwMap = new HWMap(hardwareMap);
-        intakeFSM = new IntakeFSM(intaketransferhwmap, telemetry);
-        transferFSM = new TransferFSM(intaketransferhwmap, telemetry);
+        intakeFSM = new IntakeFSM(hwMap, telemetry);
+        transferFSM = new TransferFSM(hwMap, telemetry);
         shooterFSM = new ShooterFSM(hwMap,telemetry);
 
 

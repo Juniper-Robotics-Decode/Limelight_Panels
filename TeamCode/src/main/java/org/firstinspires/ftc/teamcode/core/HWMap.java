@@ -6,13 +6,22 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class HWMap {
+    // shooter
     private final MotorEx flywheelMotor;
     private final MotorEx turretMotor;
     private final CRServo pitchServo;
     private final AnalogInput pitchEncoder;
     private final Limelight3A limelight;
+
+    //intake
+    private final MotorEx intakeMotor;
+
+    // Transfer
+    private final MotorEx transferMotor;
+    private final Servo transferServo;
 
     public HWMap (HardwareMap hardwareMap) {
         flywheelMotor = new MotorEx(hardwareMap,"FM", Motor.GoBILDA.BARE);
@@ -21,6 +30,11 @@ public class HWMap {
         pitchServo = new CRServo(hardwareMap, "PS");
         pitchEncoder = hardwareMap.get(AnalogInput.class, "PE");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        intakeMotor = new MotorEx(hardwareMap, "IM", Motor.GoBILDA.RPM_1150);
+        transferMotor = new MotorEx(hardwareMap, "TRM", Motor.GoBILDA.RPM_312);
+        transferServo = hardwareMap.get(Servo.class, "TS");
+        transferServo.setDirection(Servo.Direction.REVERSE);
     }
 
 
@@ -42,5 +56,18 @@ public class HWMap {
 
     public AnalogInput getPitchEncoder() {
         return pitchEncoder;
+    }
+
+
+    public MotorEx getIntakeMotor() {
+        return intakeMotor;
+    }
+
+    public MotorEx getTransferMotor() {
+        return transferMotor;
+    }
+
+    public Servo getTransferServo() {
+        return transferServo;
     }
 }

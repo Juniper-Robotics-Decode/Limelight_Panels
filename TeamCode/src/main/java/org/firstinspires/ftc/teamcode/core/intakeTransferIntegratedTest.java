@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.intaketransfer.TransferFSM;
 public class intakeTransferIntegratedTest extends LinearOpMode {
 
 
-    private Intaketransferhwmap hwmap;
+    private HWMap hwmap;
     private GamepadEx gamepad;
     private IntakeFSM intakeFSM;
     private TransferFSM transferFSM;
@@ -24,7 +24,7 @@ public class intakeTransferIntegratedTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        hwmap = new Intaketransferhwmap(hardwareMap);
+        hwmap = new HWMap(hardwareMap);
         gamepad = new GamepadEx(gamepad1);
         intakeFSM = new IntakeFSM(hwmap, telemetry);
         transferFSM = new TransferFSM(hwmap, telemetry);
