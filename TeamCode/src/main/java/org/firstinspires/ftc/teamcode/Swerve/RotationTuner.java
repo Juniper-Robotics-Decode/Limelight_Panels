@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Hardware.AbsoluteAnalogEncoder;
+import org.firstinspires.ftc.teamcode.Swerve.Hardware.AbsoluteAnalogEncoder;
 
 @Config
 @TeleOp

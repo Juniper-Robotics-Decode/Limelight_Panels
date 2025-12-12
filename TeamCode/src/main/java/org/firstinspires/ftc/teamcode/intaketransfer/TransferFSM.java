@@ -3,8 +3,7 @@ package org.firstinspires.ftc.teamcode.intaketransfer;
 import com.arcrobotics.ftclib.util.Timing;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.intaketransfer.BeltFSM;
-import org.firstinspires.ftc.teamcode.intaketransfer.TransferServoFSM;
+import org.firstinspires.ftc.teamcode.core.Intaketransferhwmap;
 
 import java.util.concurrent.TimeUnit;
 

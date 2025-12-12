@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Swerve;
+package org.firstinspires.ftc.teamcode.core;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static java.lang.Math.abs;
@@ -8,6 +8,7 @@ import static java.lang.Math.hypot;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.pedropathing.localization.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -24,12 +25,16 @@ import org.firstinspires.ftc.teamcode.Swerve.Geo.MathUtils;
 import org.firstinspires.ftc.teamcode.Swerve.Geo.Point;
 import org.firstinspires.ftc.teamcode.Swerve.Geo.Pose;
 import org.firstinspires.ftc.teamcode.Swerve.Hardware.AbsoluteAnalogEncoder;
+import org.firstinspires.ftc.teamcode.Swerve.Module;
+import org.firstinspires.ftc.teamcode.shooter.ShooterFSM;
+import org.firstinspires.ftc.teamcode.intake.IntakeFSM;
+import org.firstinspires.ftc.teamcode.intaketransfer.TransferFSM;
 
 import java.util.Arrays;
 
 @Config
 @TeleOp
-public class SwerveTest extends LinearOpMode {
+public class IntegratedTesting extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -50,9 +55,10 @@ public class SwerveTest extends LinearOpMode {
 
     //FL, BL, BR, FR
     private AbsoluteAnalogEncoder AFLE, AFRE, ABLE, ABRE;
-    public static double zeros[] = new double[]{-0.25, 1, 3.2, 0.3};
+    public static double zeros[] = new double[]{-0.4, 1, 3.2, 0.3};
     public static boolean inverses[] = new boolean[]{false,false,false,false};
-    public static double MotorScaling[] = new double[]{1,1,1,1}; //dont make negative inverse the encoder
+    public static double MotorScaling[] = new double[]{0.8,0.8,1,0.8}; //dont make negative inverse the encoder
+
 
     GoBildaPinpointDriver odo;
 
@@ -72,6 +78,14 @@ public class SwerveTest extends LinearOpMode {
     private Pose2D pos;
 
     private double MAX;
+
+
+    private Intaketransferhwmap intaketransferhwmap;
+    private HWMap hwMap;
+    private GamepadEx gamepad;
+    private IntakeFSM intakeFSM;
+    private TransferFSM transferFSM;
+    private ShooterFSM shooterFSM;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -133,12 +147,19 @@ public class SwerveTest extends LinearOpMode {
         odo.recalibrateIMU();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
+        intaketransferhwmap = new Intaketransferhwmap(hardwareMap);
+        hwMap = new HWMap(hardwareMap);
+        intakeFSM = new IntakeFSM(intaketransferhwmap, telemetry);
+        transferFSM = new TransferFSM(intaketransferhwmap, telemetry);
+        shooterFSM = new ShooterFSM(hwMap,telemetry);
+
+
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
-
-
+            telemetry.addData("ALLIANCE", MainAuto.ALLIANCE);
             AFLE.zero(zeros[0]);
             AFLE.setInverted(inverses[0]);
 
@@ -152,7 +173,7 @@ public class SwerveTest extends LinearOpMode {
             AFRE.setInverted(inverses[3]);
 
             x = gamepad1.left_stick_x;
-            y = gamepad1.left_stick_y;
+            y = -gamepad1.left_stick_y;
             heading = gamepad1.right_stick_x;
 
             if (gamepad1.options) {
@@ -189,11 +210,12 @@ public class SwerveTest extends LinearOpMode {
 
             MAX = MathUtils.max(ws);
 
-            /*if (x == 0 && y == 0 && heading == 0){
+/*if (x == 0 && y == 0 && heading == 0){
                 wa = new double[]{atan2(1,1), atan2(-1, 1), atan2(-1, -1), atan2(1, -1)};
             }*/
 
-             for (int i = 0; i < 4; i++) {
+
+            for (int i = 0; i < 4; i++) {
                 Module m = modules[i];
                 if (Math.abs(MAX) > 1) ws[i] /= MAX;
                 m.setMotorPower(Math.abs(ws[i])*MotorScaling[i]);
@@ -202,6 +224,12 @@ public class SwerveTest extends LinearOpMode {
                 odo.update();
             }
 
+            intakeFSM.updateState(gamepad1.y, gamepad1.dpad_left);
+            transferFSM.updateState(gamepad1.dpad_right, gamepad1.right_bumper);
+            shooterFSM.updateState(gamepad1.b);
+
+
+            shooterFSM.log();
             telemetry.addData("front left target angle", Arrays.toString(wa));
             telemetry.addData("front left voltage", AFLE.getVoltage());
             telemetry.addData("front right voltage", AFRE.getVoltage());
@@ -225,3 +253,4 @@ public class SwerveTest extends LinearOpMode {
     }
 
 }
+

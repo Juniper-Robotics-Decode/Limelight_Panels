@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Hardware.AbsoluteAnalogEncoder;
+import org.firstinspires.ftc.teamcode.Swerve.Hardware.AbsoluteAnalogEncoder;
 
 @Config
 public class Module {
