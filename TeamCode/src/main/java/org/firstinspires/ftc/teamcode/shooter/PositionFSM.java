@@ -4,7 +4,9 @@ import com.arcrobotics.ftclib.util.InterpLUT;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.core.HWMap;
+import org.firstinspires.ftc.teamcode.core.RobotSettings;
 import org.firstinspires.ftc.teamcode.shooter.wrappers.LimelightCamera;
+import org.firstinspires.ftc.teamcode.shooter.wrappers.Pinpoint;
 
 public class PositionFSM {
 
@@ -31,6 +33,7 @@ public class PositionFSM {
 
     private States state;
     private LimelightCamera limelightCamera;
+    private Pinpoint pinpoint;
     private InterpLUT velocityMap;
 
     private double defaultFlywheelVelocity;
@@ -45,6 +48,7 @@ public class PositionFSM {
 
     public PositionFSM(HWMap hwMap, Telemetry telemetry) {
         limelightCamera = new LimelightCamera(hwMap.getLimelight(), telemetry);
+        pinpoint = new Pinpoint(hwMap);
         state = States.NO_VALID_TARGET;
         createVelocityMap();
         this.telemetry = telemetry;
@@ -52,24 +56,37 @@ public class PositionFSM {
 
     public void updateState() {
         limelightCamera.update();
+        pinpoint.update();
 
-        if(limelightCamera.hasTarget()) {
-            if (limelightCamera.getFlatDistance() >= threshold2) {
-                state = States.ZONE_3;
-            } else if (limelightCamera.getFlatDistance() >= threshold1) {
-                state = States.ZONE_2;
-            } else {
-                state = States.ZONE_1;
+        if(limelightCamera.hasTarget() && pinpoint.pinpointReady()) {
+            if(RobotSettings.distanceMethod == RobotSettings.DistanceMethod.LIMELIGHT_ONLY && limelightCamera.hasTarget()) {
+                if (limelightCamera.getFlatDistance() >= threshold2) {
+                    state = States.ZONE_3;
+                } else if (limelightCamera.getFlatDistance() >= threshold1) {
+                    state = States.ZONE_2;
+                } else {
+                    state = States.ZONE_1;
+                }
+                findFlywheelTargetVelocity(limelightCamera.getFlatDistance());
+                findPitchTargetAngle();
+                findTurretError(limelightCamera.getTy());
+            }
+            else if(RobotSettings.distanceMethod == RobotSettings.DistanceMethod.PINPOINT_ONLY && pinpoint.pinpointReady()) {
+                if (pinpoint.getGoalDistance() >= threshold2) {
+                    state = States.ZONE_3;
+                } else if (pinpoint.getGoalDistance() >= threshold1) {
+                    state = States.ZONE_2;
+                } else {
+                    state = States.ZONE_1;
+                }
+                findFlywheelTargetVelocity(pinpoint.getGoalDistance());
+                findPitchTargetAngle();
+                findTurretError(pinpoint.getHeadingError());
             }
         }
         else {
             state = States.NO_VALID_TARGET;
         }
-
-
-        findFlywheelTargetVelocity(limelightCamera.getFlatDistance());
-        findPitchTargetAngle();
-        findTurretError(limelightCamera.getTy());
     }
 
     private void createVelocityMap() {
@@ -103,12 +120,12 @@ public class PositionFSM {
         pitchTargetAngle = state.getTargetAngle();
     }
 
-    public void findTurretError(double ty) {
+    public void findTurretError(double error) {
         if(state == States.NO_VALID_TARGET) {
             turretError = 0;
         }
         else {
-            turretError = ty;
+            turretError = error;
         }
     }
 
@@ -125,11 +142,14 @@ public class PositionFSM {
     }
 
     public void log() {
+        telemetry.addLine("----------POSITION FSM LOG----------");
         telemetry.addData("position FSM state", state);
         telemetry.addData("Flywheel Target", flywheelTargetVelocityRPM);
         telemetry.addData("Pitch Target", pitchTargetAngle);
         telemetry.addData("Turret Error", turretError);
 
+
+        telemetry.addLine("----------LIMELIGHT LOG----------");
         telemetry.addData("X", limelightCamera.getX());
         telemetry.addData("Y", limelightCamera.getY());
         telemetry.addData("Z", limelightCamera.getZ());
@@ -137,6 +157,16 @@ public class PositionFSM {
         telemetry.addData("tx",limelightCamera.getTx());
         telemetry.addData("ty", limelightCamera.getTy());
         telemetry.addData("Has target", limelightCamera.hasTarget());
+        telemetry.addLine("----------LIMELIGHT LOG----------");
+
+        telemetry.addLine("----------PINPOINT LOG----------");
+
+
+        telemetry.addLine("----------PINPOINT LOG----------");
+        telemetry.addData("Goal Distance", pinpoint.getGoalDistance());
+        telemetry.addData("pinpoint heading error", pinpoint.getHeadingError());
+        telemetry.addData("pinpoint ready", pinpoint.pinpointReady());
+        telemetry.addLine("----------POSITION FSM LOG----------");
     }
 
 }

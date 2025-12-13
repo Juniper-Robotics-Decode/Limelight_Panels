@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.core;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.pedropathing.localization.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -23,6 +24,9 @@ public class HWMap {
     private final MotorEx transferMotor;
     private final Servo transferServo;
 
+
+    private GoBildaPinpointDriver odo;
+
     public HWMap (HardwareMap hardwareMap) {
         flywheelMotor = new MotorEx(hardwareMap,"FM", Motor.GoBILDA.BARE);
         flywheelMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
@@ -35,6 +39,8 @@ public class HWMap {
         transferMotor = new MotorEx(hardwareMap, "TRM", Motor.GoBILDA.RPM_312);
         transferServo = hardwareMap.get(Servo.class, "TS");
         transferServo.setDirection(Servo.Direction.REVERSE);
+
+        odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
     }
 
 
@@ -69,5 +75,9 @@ public class HWMap {
 
     public Servo getTransferServo() {
         return transferServo;
+    }
+
+    public GoBildaPinpointDriver getOdo() {
+        return odo;
     }
 }
